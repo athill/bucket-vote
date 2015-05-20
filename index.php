@@ -1,5 +1,5 @@
 <?php
-require_once('setup.inc.php');
+require_once('conf/setup.php');
 
 
 $_SESSION['flash']['info'][] = 'test';

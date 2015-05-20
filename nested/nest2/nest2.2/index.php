@@ -1,5 +1,5 @@
 <?php 
-require('../../../setup.inc.php');
+require('../../../conf/setup.php');
 $local = [];
 
 $page = new \Athill\Utils\Page($local);

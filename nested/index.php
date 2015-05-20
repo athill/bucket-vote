@@ -1,5 +1,5 @@
 <?php 
-require('../setup.inc.php');
+require('../conf/setup.php');
 $local = [
 	'layout'=>[
 		'leftsidebar'=> [['type'=>'menu']],
