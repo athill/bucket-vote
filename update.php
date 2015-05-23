@@ -29,6 +29,9 @@ if (isset($request['action'])) {
 		case 'delete-from-member-bucket':
 			if (isset($request['member']) && isset($request['prospect'])) {
 				$mappings = getData('mappings');
+				$member = $request['member'];
+				$prospect = $request['prospect'];
+				$mappings[$member] = deleteFromArray($mappings[$member], $prospect);
 				putData('mappings', $mappings);				
 			}
 			break;

@@ -44,22 +44,11 @@ $(function() {
 			    		var success = function(data){
 					    	console.log('success');
 				    		//// clone object
-					    	$clone = $draggable.clone();
-					    	$clone.removeAttr('id');
-					    	$clone.css({'cursor': 'auto'});
-					    	$clone.find('.count').remove();
-					    	//// change click handler for delete button
-					    	$remove = $clone.find('.delete-button');
-					    	$remove.off('click', removeProspectFromProspects);
-					    	$remove.click(removeProspectFromMember);
-					    	//// add clone to prospects
-					        $droppable.append($clone);
-					        //// increment parent count
-					        $count = $parent.find('header .count');
-					        increment($count);
-					        //// increment prospect count
-					        $count = $draggable.find('.count');
-					        increment($count);
+					    	var $clone = $draggable.clone();
+					        var $member = $parent;
+					        var $prospect = $clone;
+					        addProspectToMemberDom($member, $prospect);
+
 					    };
 					    updateData(data, success);		    		
 
@@ -88,7 +77,13 @@ $(function() {
 
 	$.getJSON('/data/mappings.json', function(data) {
 		for (var member in data) {
-
+			var $member = $('#'+getId(member));
+			data[member].forEach(function(name) {
+				var $prospect = createProspectDom(name);
+				var $remove = createRemoveDom(removeProspectFromMember);
+				$prospect.append($remove);
+				addProspectToMemberDom($member, $prospect);
+			});
 		}
 	});
 
@@ -151,7 +146,7 @@ $(function() {
 	}
 
 	function createMemberDom(memberName) {
-		return $('<div class="member">'+
+		return $('<div class="member" id="'+getId(memberName)+'">'+
 				'<header>'+
 				'<span class="name">'+memberName+'</span>'+
 				'<span class="count">0</span>'+
@@ -193,8 +188,9 @@ $(function() {
 			$committee.find('.member-prospects').each(function(i) {
 				$(this).find('.prospect').each(function(j) {
 					if ($(this).find('.name').text() === name) {
+						var $member = $(this).closest('.member');
 						// console.log($(this));
-						removeProspectFromMemberDom($(this));
+						removeProspectFromMemberDom($member, $(this));
 					}
 				});
 			});
@@ -203,12 +199,23 @@ $(function() {
 	}
 
 	function removeProspectFromMember(e) {
-		console.log($(this));
-		removeProspectFromMemberDom($(this).parent());
+		var $prospect = $(this).parent();
+		var $member = $prospect.closest('.member');
+		var data = {
+			action: 'delete-from-member-bucket',
+			member: $member.find('header .name').text(),
+			prospect: $prospect.find('.name').text()
+
+		};
+		var success = function(data) {
+			removeProspectFromMemberDom($member, $prospect);	
+		}
+		updateData(data, success);
+		
 	}
 
-	function removeProspectFromMemberDom($prospect) {
-		var $member = $prospect.closest('.member');
+	function removeProspectFromMemberDom($member, $prospect) {
+		
 		var name = $prospect.find('.name').text();
 		var id = getId(name);
 		var $original = $('#'+id);
@@ -218,6 +225,28 @@ $(function() {
 		decrement($member.find('header .count'));
 		$prospect.remove();
 		console.log('removing '+name);			
+	}
+
+	function addProspectToMemberDom($member, $prospect) {
+        var id = getId($prospect.find('.name').text());
+        var $original = $('#'+id);		
+    	$prospect.removeAttr('id');
+    	$prospect.css({'cursor': 'auto'});
+    	$prospect.find('.count').remove();
+    	//// change click handler for delete button
+    	$remove = $prospect.find('.delete-button');
+    	$remove.off('click');
+    	$remove.click(removeProspectFromMember);
+    	//// add clone to prospects
+    	console.log($member, $prospect);
+        $member.find('.member-prospects').append($prospect);
+        //// increment parent count
+        $count = $member.find('header .count');
+        increment($count);
+        //// increment prospect count
+
+        $count = $original.find('.count');
+        increment($count);
 	}
 
 
