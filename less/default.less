@@ -1,187 +1,34 @@
-@import 'custom-bootstrap/variables.less';
-
-//// mixins
-body {
-	color: @body-bg;
-}
-
-#container {
-	background: @page-background + #ddd;
-	margin-top: 2em;
-	.rounded;
-	padding: 0;
-	&.container {
-		padding: 0;
-	}		
-}
-
-header {
-	.banner {
-		background: @content-background - #444;
-		margin: 1em;
-		.rounded;
-		h1 {
-			font-size: 4em;
-			// .inverse(@text-color);
-			color: white;
-			text-shadow: @text-color - #444 0.05em 0.05em;
-			text-align: center;
-		}		
-	}		
-	.breadcrumbs {
-		background: @page-background + #999;
-		padding: 0.5em;
-		ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-			li {
-				display: inline;
-			}
-		}
-	}	
-	.top-menu {
-		background: @page-background;
-	}	
-}
-
-//// placing manually for now
-.banner {
-	// position: relative;
-}
-
-#banner-content {
-	// display: inline-block;
-	text-align: center;
-
-}
-
-#menu-toggle {
-	font-size: 3em;
-	padding-top: 0.4em;
-	text-align: center;
-	a {
-		outline: none;
-	}
-}
-
-#mobile-menu {
-	display: none;
-}
-
-
-
-
-@media (max-width: 400px) {
-	#banner-content {
-		font-size: 0.7em;
-	}
-	#menu-toggle {
-		padding-top: 0.2em;
-	}
-}
-
-@media (max-width: 280px) {
-	#banner-content {
-		font-size: 0.4em;
-	}
-	#menu-toggle {
-		padding-top: 0.2em;
-		font-size: 2.6em;
-	}
-}
-
-/*superfish */
-.sf-menu {
-    margin-bottom: 0;
-    ul {
-    	box-shadow: 2px 2px 6px rgba(0,0,0,.2);	
-    	li {
-    		background: #000;
-    	}
-    	ul li {
-    		background: #000;
-    	}
-    }
-	a {
-		border-right: 1px solid #fff;
-		border-left: none;
-		border-top: none;	
-		// border-top: 1px solid #dFeEFF;  fallback colour must use full shorthand 
-		// border-top: 1px solid rgba(255,255,255,.5);
-		color: #FFF !important;
-	}
-	li {
-		background: #000;
-		&:hover, &.sfHover {
-			background: #999;
-		}
-		&.active {
-			background: #FFF;
-			& > a {
-				color: #000 !important;
-			}
-			&:hover {
-				background: #999;
-			}
-		}
-	}
-	.sf-arrows {
-		&.sf-with-ul:after {
-			 // order of following 3 rules important for fallbacks to work 
-			border: 5px solid transparent;
-			border-top-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
-			border-top-color: rgba(255,255,255,.5);
-		}
-		/* styling for both css and generated arrows */
-		& > li > .sf-with-ul:focus:after,
-		& > li:hover > .sf-with-ul:after,
-		& > .sfHover > .sf-with-ul:after {
-			border-top-color: white; /* IE8 fallback colour */
-		}		
-		/* styling for right-facing arrows */
-		& ul .sf-with-ul:after {
-			border-left-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
-			border-left-color: rgba(255,255,255,.5);
-		}
-	}
-
-}
-
-#layout {
-	margin-top: 1em;
-}
-
-#content {
-	min-height: @min-height;
-}
-
-/* side bar styles */
-.sidebar {
-	background: @content-background;
-	.rounded;
-	min-height: @min-height;
-	.sidebar-section {
-		.bordered;
-		.rounded;
-		font-size: 0.8em;
-		margin-bottom: 0.2em;
-		min-height: @min-height / 2;	
-	}
-	
-}
-
-// footer {
-// 	text-align: right;
-// 	padding: 2em;
-// }
-footer {
-	background: #444;  
-	color: white;
-	text-align: center;
+.member {
+	display: inline-block;
+	width: 15em;
+	border-radius: 0.5em;
+	background-color: #AAA;
 	padding: 0.5em;
-	/* copied from #page */
-	-moz-border-radius: 0 0 15px 15px;
-	-webkit-border-radius: 0 0 15px 15px;
-	border-radius: 0 0 15px 15px;
+	margin: 0.5em;
+	.name {
+		padding: 0;
+		margin: 0;
+	}
+	.member-prospects {
+		background-color: #CCC;
+		min-height: 8em;
+	}
+}
+
+.prospect {
+	display: inline-block;
+	border-radius: 0.5em;
+	background-color: #0C0;
+	padding: 0.5em;
+	margin: 0.5em;
+	cursor: move;
+	.delete-button {
+		margin-left: 0.5em;
+		font-size: 1.2em;
+		color: red;
+		cursor: pointer;
+	}
+	.count {
+		margin-left: 0.5em;
+	}
 }

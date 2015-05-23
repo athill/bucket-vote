@@ -9,29 +9,19 @@ return [
 	////		- Convert string to array if passed into js or css
 	'sequence'=>['jquery', 'fontawesome', 'bootstrap', 'superfish', 'treemenu', 'metisMenu'],
 	'modules'=>[
-		'jquery' => array(
-			'root'=>$bower.'/jquery/dist',
-			'js'=>array('/jquery.min.js')
-		),
-		'bootstrap'=>array(
-			'js'=>array($bower.'/bootstrap/dist/js/bootstrap.min.js'),
-			'css'=>array('/css/bootstrap.css')
-		),
-		'superfish'=>array(
-			'js'=>[$bower.'/superfish/dist/js/superfish.min.js'],
-			'css'=>[$bower.'/superfish/dist/css/superfish.css'],
-		),
-		'treemenu'=>array(
-			'root'=>$bower.'/jquery.treeview',
-			'js'=>['/jquery.treeview.js', '/demo/jquery.cookie.js'],
-			'css'=>['/jquery.treeview.css']
-		),
-		'fontawesome'=>[
-			'css'=>[$bower.'/fontawesome/css/font-awesome.min.css']
+		'jquery' => [
+			'js'=>['http://code.jquery.com/jquery-2.1.4.min.js']
 		],
-		'metisMenu'=>[
-			'js'=>[$bower.'/metisMenu/dist/metisMenu.js'],
-			'css'=>[$bower.'/metisMenu/dist/metisMenu.min.css', '/css/metisMenuStyles.css']
+		'bootstrap'=>[
+			'js'=>['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js'],
+			'css'=>['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css']
+		],
+		'fontawesome'=>[
+			'css'=>['//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css']
+		],
+		'jquery-ui'=>[
+			'js'=>['http://code.jquery.com/ui/1.11.4/jquery-ui.min.js'],
+			'css'=>['http://code.jquery.com/ui/1.11.4/themes/ui-darkness/jquery-ui.css']
 		]
 	]
 ];
