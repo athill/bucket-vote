@@ -1,7 +1,6 @@
 node_modules/
 bower_components/
-vendor/ezyang/
-vendor/monolog/
+vendor/
 logs/
 composer.lock
 .env.*.php

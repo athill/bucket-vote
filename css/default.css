@@ -6,11 +6,19 @@
   padding: 0.5em;
   margin: 0.5em;
 }
-.member .name {
+.member header {
+  width: 100%;
+}
+.member header .name {
   padding: 0;
   margin: 0;
+  float: left;
+}
+.member header .count {
+  float: right;
 }
 .member .member-prospects {
+  clear: both;
   background-color: #CCC;
   min-height: 8em;
 }
