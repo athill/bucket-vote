@@ -33,6 +33,7 @@ $basesettings = array(
 	'webroot'=>$webroot,
 	'fileroot'=>$fileroot,
 	'instance'=>$instance,
+	'sitename'=>'UPC Pastor Nomiating Committee Vote',
 	'objects'=>[
 		'template'=>'\Classes\Templates\DefaultTemplate'
 	]
