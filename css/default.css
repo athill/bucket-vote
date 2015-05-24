@@ -21,7 +21,7 @@
 .member .member-prospects {
   clear: both;
   background-color: #CCC;
-  min-height: 8em;
+  padding-bottom: 8em;
 }
 .prospect {
   display: inline-block;

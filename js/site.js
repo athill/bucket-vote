@@ -69,21 +69,7 @@ $(function() {
 			});
 		}
 		if (add) {
-			var data = {
-				action: 'add-to-prospects',
-				prospect: name
-			};
-			var success = function(data) {
-				var $prospect = createProspectDom(name),
-					$remove = createRemoveDom(removeProspectFromProspects),
-					$count = createCountDom();
-				$prospect.append($count);
-				$prospect.append($remove);
-				$prospects.append($prospect);
-				sortProspects();
-				$nameField.val('');				
-			}
-			updateData(data, success);
+			addToProspects(name);
 		}
 	});
 
@@ -264,5 +250,23 @@ $(function() {
     	}
     }
 
-});
+    function addToProspects(name) {
+		var data = {
+			action: 'add-to-prospects',
+			prospect: name
+		};
+		var success = function(data) {
+			var $prospect = createProspectDom(name),
+				$remove = createRemoveDom(removeProspectFromProspects),
+				$count = createCountDom();
+			$prospect.append($count);
+			$prospect.append($remove);
+			$prospects.append($prospect);
+			sortProspects();
+			$nameField.val('');				
+		}
+		updateData(data, success);    	
+    }
 
+
+});
