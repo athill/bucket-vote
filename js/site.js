@@ -11,61 +11,26 @@ $(function() {
 		mappings = data;
 	});
 
+	//// load buckets
 	$.getJSON('/data/committee.json', function(data) {
 		data.forEach(function(member) {
 			var $memberprospects = $('<div class="member-prospects"></div>'),
 				$member = createMemberDom(member);
 			$memberprospects.droppable({
-			    drop: function (e, ui) {
-			    	var $draggable = $(ui.draggable),
-			    		$parent = $(this).parent(),
-			    		$children = $(this).children(),
-			    		add = true,
-			    		prospect = $draggable.find('.name').text(),
-			    		member = $parent.find('header .name').text();
-			    	//// check length
-			    	if ($children.length == memberlimit) {
-			    		alert(member +' already has '+memberlimit+' prospects');
-			    		add = false;
-			    	} else {
-			    		//// check duplicates
-				    	$children.each(function(i) {
-				    		if ($(this).find('.name').text() === prospect) {
-				    			alert(prospect + ' is already in the list for '+member);
-				    			add = false;
-				    			return false;
-				    		}
-				    	});			    		
-			    	}
-			    	if (add) {
-			    		var data = {
-				    			action: 'add-to-member-bucket',
-				    			member: member,
-				    			prospect: prospect
-				    		},
-			    			success = function(data) {
-					    		//// clone object
-						    	var $clone = $draggable.clone();
-						        addProspectToMemberDom($parent, $clone);
-
-						    };
-					    updateData(data, success);		    		
-
-			    	}
-			    }
+			    drop: handleProspectDrop
 			});
 			$member.append($memberprospects);			
 			$committee.append($member);
 		});
 	});
-	//// load prospects
+	//// load items
 	$.getJSON('/data/prospects.json', function(data) {
 		data.forEach(function(prospect) {
 			var $prospect = createProspectDom(prospect),
 				$count = createCountDom(),
 				$remove = createRemoveDom(removeProspectFromProspects);
-			$prospect.append($count);
-			$prospect.append($remove);
+			$prospect.append($count)
+				.append($remove);
 			$prospects.append($prospect);
 		});
 		sortProspects();
@@ -260,6 +225,44 @@ $(function() {
 		});
 		$children.detach().appendTo($prospects);
 	}
+
+	function handleProspectDrop(e, ui) {
+    	var $draggable = $(ui.draggable),
+    		$parent = $(this).parent(),
+    		$children = $(this).children(),
+    		add = true,
+    		prospect = $draggable.find('.name').text(),
+    		member = $parent.find('header .name').text();
+    	//// check length
+    	if ($children.length == memberlimit) {
+    		alert(member +' already has '+memberlimit+' prospects');
+    		add = false;
+    	} else {
+    		//// check duplicates
+	    	$children.each(function(i) {
+	    		if ($(this).find('.name').text() === prospect) {
+	    			alert(prospect + ' is already in the list for '+member);
+	    			add = false;
+	    			return false;
+	    		}
+	    	});			    		
+    	}
+    	if (add) {
+    		var data = {
+	    			action: 'add-to-member-bucket',
+	    			member: member,
+	    			prospect: prospect
+	    		},
+    			success = function(data) {
+		    		//// clone object
+			    	var $clone = $draggable.clone();
+			        addProspectToMemberDom($parent, $clone);
+
+			    };
+		    updateData(data, success);		    		
+
+    	}
+    }
 
 });
 
