@@ -3,7 +3,8 @@ $(function() {
 	var $committee = $('#committee'),
 		$prospects = $('#prospects'),
 		$nameField = $('#add-prospect'),
-		mappings = {};
+		mappings = {},
+		memberlimit = 10;
 
 	//// load mappings
 	$.getJSON('/data/mappings.json', function(data) {
@@ -23,8 +24,8 @@ $(function() {
 			    		prospect = $draggable.find('.name').text(),
 			    		member = $parent.find('header .name').text();
 			    	//// check length
-			    	if ($children.length == 10) {
-			    		alert(member+' already has 10 prospects');
+			    	if ($children.length == memberlimit) {
+			    		alert(member +' already has '+memberlimit+' prospects');
 			    		add = false;
 			    	} else {
 			    		//// check duplicates
