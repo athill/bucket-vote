@@ -8,42 +8,42 @@ $return = [];
 
 if (isset($request['action'])) {
 	switch($request['action']) {
-		case 'add-to-member-bucket':
-			if (isset($request['member']) && isset($request['prospect'])) {
+		case 'add-to-bucket':
+			if (isset($request['bucket']) && isset($request['item'])) {
 				$mappings = getData('mappings');
-				$member = $request['member'];
-				if (!isset($mappings[$member])) {
-					$mappings[$member] = [];
+				$bucket = $request['bucket'];
+				if (!isset($mappings[$bucket])) {
+					$mappings[$bucket] = [];
 				}
-				$mappings[$member][] = $request['prospect'];
+				$mappings[$bucket][] = $request['item'];
 				putData('mappings', $mappings);				
 			}
 			break;
-		case 'add-to-prospects':
-			if (isset($request['prospect'])) {
-				$prospects = getData('prospects');
-				$prospects[] = $request['prospect'];
-				putData('prospects', $prospects);
+		case 'add-to-items':
+			if (isset($request['item'])) {
+				$items = getData('items');
+				$items[] = $request['item'];
+				putData('items', $items);
 			}
 			break;
-		case 'delete-from-member-bucket':
-			if (isset($request['member']) && isset($request['prospect'])) {
+		case 'delete-from-bucket':
+			if (isset($request['bucket']) && isset($request['item'])) {
 				$mappings = getData('mappings');
-				$member = $request['member'];
-				$prospect = $request['prospect'];
-				$mappings[$member] = deleteFromArray($mappings[$member], $prospect);
+				$bucket = $request['bucket'];
+				$item = $request['item'];
+				$mappings[$bucket] = deleteFromArray($mappings[$bucket], $item);
 				putData('mappings', $mappings);				
 			}
 			break;
-		case 'delete-from-prospects':
-			if (isset($request['prospect'])) {
-				$prospects = getData('prospects');
-				$prospect = $request['prospect'];
-				$prospects = deleteFromArray($prospects, $prospect);
-				putData('prospects', $prospects);
+		case 'delete-from-items':
+			if (isset($request['item'])) {
+				$items = getData('items');
+				$item = $request['item'];
+				$items = deleteFromArray($items, $item);
+				putData('items', $items);
 				$mappings = getData('mappings');
-				foreach ($mappings as $member => $prospects) {
-					$mappings[$member] = deleteFromArray($mappings[$member], $prospect);
+				foreach ($mappings as $bucket => $items) {
+					$mappings[$bucket] = deleteFromArray($mappings[$bucket], $item);
 				}
 				putData('mappings', $mappings);	
 			}

@@ -1,10 +1,10 @@
 'use strict';
 $(function() {
-	var $committee = $('#committee'),
-		$prospects = $('#prospects'),
-		$nameField = $('#add-prospect'),
+	var $buckets = $('#buckets'),
+		$items = $('#items'),
+		$nameField = $('#add-item'),
 		mappings = {},
-		memberlimit = 10;
+		bucketlimit = 10;
 
 	//// load mappings
 	$.getJSON('/data/mappings.json', function(data) {
@@ -12,44 +12,44 @@ $(function() {
 	});
 
 	//// load buckets
-	$.getJSON('/data/committee.json', function(data) {
-		data.forEach(function(member) {
-			var $memberprospects = $('<div class="member-prospects"></div>'),
-				$member = createMemberDom(member);
-			$memberprospects.droppable({
-			    drop: handleProspectDrop
+	$.getJSON('/data/buckets.json', function(data) {
+		data.forEach(function(bucket) {
+			var $bucketitems = $('<div class="bucket-items"></div>'),
+				$bucket = createBucketDom(bucket);
+			$bucketitems.droppable({
+			    drop: handleItemDrop
 			});
-			$member.append($memberprospects);			
-			$committee.append($member);
+			$bucket.append($bucketitems);			
+			$buckets.append($bucket);
 		});
 	});
 	//// load items
-	$.getJSON('/data/prospects.json', function(data) {
-		data.forEach(function(prospect) {
-			var $prospect = createProspectDom(prospect),
+	$.getJSON('/data/items.json', function(data) {
+		data.forEach(function(item) {
+			var $item = createItemDom(item),
 				$count = createCountDom(),
-				$remove = createRemoveDom(removeProspectFromProspects);
-			$prospect.append($count)
+				$remove = createRemoveDom(removeItemFromItems);
+			$item.append($count)
 				.append($remove);
-			$prospects.append($prospect);
+			$items.append($item);
 		});
-		sortProspects();
+		sortItems();
 		
 	});
 	//// load mappings
 	$.getJSON('/data/mappings.json', function(data) {
-		for (var member in data) {
-			var $member = $('#'+getId(member)+'-member');
-			data[member].forEach(function(name) {
-				var $prospect = createProspectDom(name),
-					$remove = createRemoveDom(removeProspectFromMember);
-				$prospect.append($remove);
-				addProspectToMemberDom($member, $prospect);
+		for (var bucket in data) {
+			var $bucket = $('#'+getId(bucket)+'-bucket');
+			data[bucket].forEach(function(name) {
+				var $item = createItemDom(name),
+					$remove = createRemoveDom(removeItemFromBucket);
+				$item.append($remove);
+				addItemToBucketDom($bucket, $item);
 			});
 		}
 	});
-	//// add new prospect
-	$('#add-prospect-form').submit(function(e) {
+	//// add new item
+	$('#add-item-form').submit(function(e) {
 		e.preventDefault();
 		var name = $nameField.val().trim(),
 			add = true;
@@ -59,17 +59,17 @@ $(function() {
 			add = false;
 		} else {
 			//// name already exists
-			$prospects.children().each(function(i) {
+			$items.children().each(function(i) {
 				var currentname = $(this).find('.name').text().trim();
 				if (name === currentname) {
-					alert(name + ' is already a prospect');
+					alert(name + ' is already a item');
 					add = false;
 					return false;
 				}
 			});
 		}
 		if (add) {
-			addToProspects(name);
+			addToItems(name);
 		}
 	});
 
@@ -97,23 +97,23 @@ $(function() {
 		$elem.html(parseInt($elem.html()) - 1);		
 	}
 
-	function createMemberDom(memberName) {
-		return $('<div class="member" id="'+getId(memberName)+'-member">'+
+	function createBucketDom(bucketName) {
+		return $('<div class="bucket" id="'+getId(bucketName)+'-bucket">'+
 					'<header>'+
-						'<span class="name">'+memberName+'</span>'+
+						'<span class="name">'+bucketName+'</span>'+
 						'<span class="count">0</span>'+
 					'</header>'+
 				'</div>');
 	}
 
-	function createProspectDom(prospectName) {
-		var $prospect = $('<div id="'+getId(prospectName)+'-prospect" class="prospect">'+
-							'<span class="name">'+prospectName+'</span>'+
+	function createItemDom(itemName) {
+		var $item = $('<div id="'+getId(itemName)+'-item" class="item">'+
+							'<span class="name">'+itemName+'</span>'+
 						'</div>');
-		$prospect.draggable({
+		$item.draggable({
 		    helper:"clone"
 		});
-		return $prospect;
+		return $item;
 	}
 
 	function createCountDom(count) {
@@ -127,20 +127,20 @@ $(function() {
     	return $remove;
 	}
 
-	function removeProspectFromProspects(e) {
+	function removeItemFromItems(e) {
 		var $parent = $(this).parent(),
 			name = $parent.find('.name').text(),
 			data = {
-				action: 'delete-from-prospects',
-				prospect: name
+				action: 'delete-from-items',
+				item: name
 			},
 			success = function(data) {
 				$parent.remove();
-				$committee.find('.member-prospects').each(function(i) {
-					$(this).find('.prospect').each(function(j) {
+				$buckets.find('.bucket-items').each(function(i) {
+					$(this).find('.item').each(function(j) {
 						if ($(this).find('.name').text() === name) {
-							var $member = $(this).closest('.member');
-							removeProspectFromMemberDom($member, $(this));
+							var $bucket = $(this).closest('.bucket');
+							removeItemFromBucketDom($bucket, $(this));
 						}
 					});
 				});
@@ -148,56 +148,56 @@ $(function() {
 		updateData(data, success);
 	}
 
-	function removeProspectFromMember(e) {
-		var $prospect = $(this).parent(),
-			$member = $prospect.closest('.member'),
+	function removeItemFromBucket(e) {
+		var $item = $(this).parent(),
+			$bucket = $item.closest('.bucket'),
 			data = {
-				action: 'delete-from-member-bucket',
-				member: $member.find('header .name').text(),
-				prospect: $prospect.find('.name').text()
+				action: 'delete-from-bucket',
+				bucket: $bucket.find('header .name').text(),
+				item: $item.find('.name').text()
 
 			},
 			success = function(data) {
-				removeProspectFromMemberDom($member, $prospect);	
+				removeItemFromBucketDom($bucket, $item);	
 			};
 		updateData(data, success);
 	}
 
-	function removeProspectFromMemberDom($member, $prospect) {
-		var name = $prospect.find('.name').text(),
+	function removeItemFromBucketDom($bucket, $item) {
+		var name = $item.find('.name').text(),
 			id = getId(name),
-			$original = $('#'+id+'-prospect');
+			$original = $('#'+id+'-item');
 		if ($original.length > 0) {
 			decrement($original.find('.count'));	
 		}
-		decrement($member.find('header .count'));
-		$prospect.remove();			
+		decrement($bucket.find('header .count'));
+		$item.remove();			
 	}
 
-	function addProspectToMemberDom($member, $prospect) {
-        var id = getId($prospect.find('.name').text()),
-        	$original = $('#'+id+'-prospect'),
-        	$remove = $prospect.find('.delete-button'),
-        	$membercount = $member.find('header .count'),
-        	$prospectcount = $original.find('.count');
-    	$prospect.removeAttr('id')
+	function addItemToBucketDom($bucket, $item) {
+        var id = getId($item.find('.name').text()),
+        	$original = $('#'+id+'-item'),
+        	$remove = $item.find('.delete-button'),
+        	$bucketcount = $bucket.find('header .count'),
+        	$itemcount = $original.find('.count');
+    	$item.removeAttr('id')
     		.css({'cursor': 'auto'})
     		.find('.count').remove();
     	//// change click handler for delete button
     	$remove.off('click')
-    		.click(removeProspectFromMember);
-    	//// add clone to prospects
-        $member.find('.member-prospects').append($prospect);
+    		.click(removeItemFromBucket);
+    	//// add clone to items
+        $bucket.find('.bucket-items').append($item);
         //// increment parent count
-        increment($membercount);
-        //// increment prospect count
-        increment($prospectcount);
+        increment($bucketcount);
+        //// increment item count
+        increment($itemcount);
 	}
 	function getId(name) {
 		return name.toLowerCase().replace(/ /, '-');
 	}
-	function sortProspects() {
-		var $children = $prospects.children();
+	function sortItems() {
+		var $children = $items.children();
 		$children.sort(function(a, b) {
 			var an = $(a).find('.name').text().split(' ')[1];
 			var bn = $(b).find('.name').text().split(' ')[1];
@@ -209,25 +209,25 @@ $(function() {
 			}
 			return 0;			
 		});
-		$children.detach().appendTo($prospects);
+		$children.detach().appendTo($items);
 	}
 
-	function handleProspectDrop(e, ui) {
+	function handleItemDrop(e, ui) {
     	var $draggable = $(ui.draggable),
     		$parent = $(this).parent(),
     		$children = $(this).children(),
     		add = true,
-    		prospect = $draggable.find('.name').text(),
-    		member = $parent.find('header .name').text();
+    		item = $draggable.find('.name').text(),
+    		bucket = $parent.find('header .name').text();
     	//// check length
-    	if ($children.length == memberlimit) {
-    		alert(member +' already has '+memberlimit+' prospects');
+    	if ($children.length == bucketlimit) {
+    		alert(bucket +' already has '+bucketlimit+' items');
     		add = false;
     	} else {
     		//// check duplicates
 	    	$children.each(function(i) {
-	    		if ($(this).find('.name').text() === prospect) {
-	    			alert(prospect + ' is already in the list for '+member);
+	    		if ($(this).find('.name').text() === item) {
+	    			alert(item + ' is already in the list for '+bucket);
 	    			add = false;
 	    			return false;
 	    		}
@@ -235,14 +235,14 @@ $(function() {
     	}
     	if (add) {
     		var data = {
-	    			action: 'add-to-member-bucket',
-	    			member: member,
-	    			prospect: prospect
+	    			action: 'add-to-bucket',
+	    			bucket: bucket,
+	    			item: item
 	    		},
     			success = function(data) {
 		    		//// clone object
 			    	var $clone = $draggable.clone();
-			        addProspectToMemberDom($parent, $clone);
+			        addItemToBucketDom($parent, $clone);
 
 			    };
 		    updateData(data, success);		    		
@@ -250,19 +250,19 @@ $(function() {
     	}
     }
 
-    function addToProspects(name) {
+    function addToItems(name) {
 		var data = {
-			action: 'add-to-prospects',
-			prospect: name
+			action: 'add-to-items',
+			item: name
 		};
 		var success = function(data) {
-			var $prospect = createProspectDom(name),
-				$remove = createRemoveDom(removeProspectFromProspects),
+			var $item = createItemDom(name),
+				$remove = createRemoveDom(removeItemFromItems),
 				$count = createCountDom();
-			$prospect.append($count);
-			$prospect.append($remove);
-			$prospects.append($prospect);
-			sortProspects();
+			$item.append($count);
+			$item.append($remove);
+			$items.append($item);
+			sortItems();
 			$nameField.val('');				
 		}
 		updateData(data, success);    	

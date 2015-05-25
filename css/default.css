@@ -1,4 +1,4 @@
-.member {
+.bucket {
   display: inline-block;
   vertical-align: top;
   width: 15em;
@@ -7,23 +7,23 @@
   padding: 0.5em;
   margin: 0.5em;
 }
-.member header {
+.bucket header {
   width: 100%;
 }
-.member header .name {
+.bucket header .name {
   padding: 0;
   margin: 0;
   float: left;
 }
-.member header .count {
+.bucket header .count {
   float: right;
 }
-.member .member-prospects {
+.bucket .bucket-items {
   clear: both;
   background-color: #CCC;
   padding-bottom: 8em;
 }
-.prospect {
+.item {
   display: inline-block;
   border-radius: 0.5em;
   width: 12.75em;
@@ -32,12 +32,12 @@
   margin: 0.5em;
   cursor: move;
 }
-.prospect .delete-button {
+.item .delete-button {
   margin-left: 0.5em;
   font-size: 1.2em;
   color: red;
   cursor: pointer;
 }
-.prospect .count {
+.item .count {
   margin-left: 0.5em;
 }
