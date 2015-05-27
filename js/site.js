@@ -3,38 +3,15 @@ $(function() {
 	var $buckets = $('#buckets'),
 		$items = $('#items'),
 		$namesField = $('#add-items'),
-		mappings = {},
 		bucketlimit = 10;
-
-	//// load mappings
-	$.getJSON('/data/mappings.json', function(data) {
-		mappings = data;
-	});
 
 	//// load buckets
 	$.getJSON('/data/buckets.json', function(data) {
-		data.forEach(function(bucket) {
-			var $bucketitems = $('<div class="bucket-items"></div>'),
-				$bucket = createBucketDom(bucket);
-			$bucketitems.droppable({
-			    drop: handleItemDrop
-			});
-			$bucket.append($bucketitems);			
-			$buckets.append($bucket);
-		});
+		addBucketsToDom(data);
 	});
 	//// load items
 	$.getJSON('/data/items.json', function(data) {
-		data.forEach(function(item) {
-			var $item = createItemDom(item),
-				$count = createCountDom(),
-				$remove = createRemoveDom(removeItemFromItems);
-			$item.append($count)
-				.append($remove);
-			$items.append($item);
-		});
-		sortItems();
-		
+		addItemsToCollectionDom(data);
 	});
 	//// load mappings
 	$.getJSON('/data/mappings.json', function(data) {
@@ -255,6 +232,18 @@ $(function() {
 		updateData(data, success);    	
     }
 
+
+    function addBucketsToDom(buckets) {
+		buckets.forEach(function(bucket) {
+			var $bucketitems = $('<div class="bucket-items"></div>'),
+				$bucket = createBucketDom(bucket);
+			$bucketitems.droppable({
+			    drop: handleItemDrop
+			});
+			$bucket.append($bucketitems);			
+			$buckets.append($bucket);
+		});    	
+    }
 
 	function addItemsToCollectionDom(names) {
 		names.forEach(function(name) {
