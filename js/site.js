@@ -2,7 +2,7 @@
 $(function() {
 	var $buckets = $('#buckets'),
 		$items = $('#items'),
-		$nameField = $('#add-item'),
+		$namesField = $('#add-items'),
 		mappings = {},
 		bucketlimit = 10;
 
@@ -48,29 +48,51 @@ $(function() {
 			});
 		}
 	});
-	//// add new item
-	$('#add-item-form').submit(function(e) {
+	//// add new item/bucket
+	$('.add-form').submit(function(e) {
 		e.preventDefault();
-		var name = $nameField.val().trim(),
-			add = true;
+		var names = $namesField.val(),
+			type = $(this).attr('id').split('-')[1],
+			duplicates = [],
+			adds = [];
 		//// empty name
-		if (name === '') {
-			alert('Please supply a name');
-			add = false;
-		} else {
-			//// name already exists
-			$items.children().each(function(i) {
-				var currentname = $(this).find('.name').text().trim();
-				if (name === currentname) {
-					alert(name + ' is already a item');
-					add = false;
-					return false;
-				}
-			});
+		if (names === '') {
+			alert('Please supply at least one '+type.replace(/s$/, ''));
+			return;
 		}
-		if (add) {
-			addToItems(name);
+		names = names.split(';');
+		names = names.map(function(name) {
+			return name.trim();
+		});
+		//// name already exists
+		$items.children().each(function(i) {
+			var currentname = $(this).find('.name').text().trim();
+			if (names.indexOf(currentname) >= 0) {
+				// alert(currentname + ' is already in items');
+				duplicates.push(currentname);
+				return false;
+			}
+		});
+		adds = names.filter(function(name) {
+			return duplicates.indexOf(name) < 0;
+		});
+		if (adds.length === 0) {
+			alert('There are no new '+type+' to add. The following '+type+' are duplicates: ' +
+				duplicates.join(';')
+			);
+			return;
 		}
+		if (duplicates.length > 0) {
+			var add = confirm('The following '+type+' are duplicates: '+duplicates.join(';')+'\n'+
+				'The following '+type+' will be added: '+adds.join(';')+'\n'+
+				'Do you wish to add these '+type+'?'
+			);
+			if (!add) {
+				return;
+			}
+		}
+		$namesField.val('');
+		addToItems(adds);
 	});
 
 	function updateData(data, success) {
@@ -97,35 +119,7 @@ $(function() {
 		$elem.html(parseInt($elem.html()) - 1);		
 	}
 
-	function createBucketDom(bucketName) {
-		return $('<div class="bucket" id="'+getId(bucketName)+'-bucket">'+
-					'<header>'+
-						'<span class="name">'+bucketName+'</span>'+
-						'<span class="count">0</span>'+
-					'</header>'+
-				'</div>');
-	}
 
-	function createItemDom(itemName) {
-		var $item = $('<div id="'+getId(itemName)+'-item" class="item">'+
-							'<span class="name">'+itemName+'</span>'+
-						'</div>');
-		$item.draggable({
-		    helper:"clone"
-		});
-		return $item;
-	}
-
-	function createCountDom(count) {
-		var count = count || 0;
-		return $('<span class="count">'+count+'</span>');
-	}
-
-	function createRemoveDom(callback) {
-    	var $remove = $('<i class="fa fa-times-circle delete-button"></i>');
-    	$remove.click(callback);		
-    	return $remove;
-	}
 
 	function removeItemFromItems(e) {
 		var $parent = $(this).parent(),
@@ -250,23 +244,59 @@ $(function() {
     	}
     }
 
-    function addToItems(name) {
+    function addToItems(names) {
 		var data = {
 			action: 'add-to-items',
-			item: name
+			items: names
 		};
 		var success = function(data) {
-			var $item = createItemDom(name),
-				$remove = createRemoveDom(removeItemFromItems),
-				$count = createCountDom();
-			$item.append($count);
-			$item.append($remove);
-			$items.append($item);
-			sortItems();
-			$nameField.val('');				
+			addItemsToCollectionDom(names);
 		}
 		updateData(data, success);    	
     }
 
+
+	function addItemsToCollectionDom(names) {
+		names.forEach(function(name) {
+			var $item = createItemDom(name),
+				$count = createCountDom(),
+				$remove = createRemoveDom(removeItemFromItems);
+			$item.append($count)
+				.append($remove);
+			$items.append($item);
+		});
+		sortItems();
+	}
+
+	//// DOM methods
+	function createBucketDom(bucketName) {
+		return $('<div class="bucket" id="'+getId(bucketName)+'-bucket">'+
+					'<header>'+
+						'<span class="name">'+bucketName+'</span>'+
+						'<span class="count">0</span>'+
+					'</header>'+
+				'</div>');
+	}
+
+	function createItemDom(itemName) {
+		var $item = $('<div id="'+getId(itemName)+'-item" class="item">'+
+							'<span class="name">'+itemName+'</span>'+
+						'</div>');
+		$item.draggable({
+		    helper:"clone"
+		});
+		return $item;
+	}
+
+	function createCountDom(count) {
+		var count = count || 0;
+		return $('<span class="count">'+count+'</span>');
+	}
+
+	function createRemoveDom(callback) {
+    	var $remove = $('<i class="fa fa-times-circle delete-button"></i>');
+    	$remove.click(callback);		
+    	return $remove;
+	}
 
 });
