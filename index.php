@@ -11,6 +11,7 @@ $h->div('', ['id'=>'buckets']);
 $h->div('', ['id'=>'items']);
 
 addForm('items');
+addForm('buckets');
 
 $page->end();
 

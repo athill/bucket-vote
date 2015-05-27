@@ -29,7 +29,7 @@ $(function() {
 		e.preventDefault();
 		var $namesField = $(this).find('.add-field'),
 			names = $namesField.val(),
-			type = $(this).attr('id').split('-')[1],
+			type = $(this).prop('id').split('-')[1],
 			duplicates = [],
 			adds = [];
 		//// empty name
@@ -50,15 +50,18 @@ $(function() {
 				return false;
 			}
 		});
+		//// wheat/chaff
 		adds = names.filter(function(name) {
 			return duplicates.indexOf(name) < 0;
 		});
+		//// all duplicates
 		if (adds.length === 0) {
 			alert('There are no new '+type+' to add. The following '+type+' are duplicates: ' +
 				duplicates.join(';')
 			);
 			return;
 		}
+		//// some duplicates
 		if (duplicates.length > 0) {
 			var add = confirm('The following '+type+' are duplicates: '+duplicates.join(';')+'\n'+
 				'The following '+type+' will be added: '+adds.join(';')+'\n'+
@@ -68,8 +71,9 @@ $(function() {
 				return;
 			}
 		}
-		$namesField.val('');
-		addToItems(adds);
+		//// clear $nameField
+		$namesField.val('');		
+		addToCollection(type, adds);
 	});
 
 	function updateData(data, success) {
@@ -111,7 +115,7 @@ $(function() {
 		var $item = $(this).parent(),
 			$bucket = $item.closest('.bucket'),
 			data = {
-				action: 'delete-from-bucket',
+				action: 'delete-item-from-bucket',
 				bucket: $bucket.find('header .name').text(),
 				item: $item.find('.name').text()
 
@@ -194,7 +198,7 @@ $(function() {
     	}
     	if (add) {
     		var data = {
-	    			action: 'add-to-bucket',
+	    			action: 'add-item-to-bucket',
 	    			bucket: bucket,
 	    			item: item
 	    		},
@@ -202,22 +206,24 @@ $(function() {
 		    		//// clone object
 			    	var $clone = $draggable.clone();
 			        addItemToBucketDom($parent, $clone);
-
 			    };
 		    updateData(data, success);		    		
 
     	}
     }
 
-    function addToItems(names) {
+    function addToCollection(typeid, names) {
 		var data = {
-			action: 'add-to-items',
-			items: names
-		};
-		var success = function(data) {
-			addItemsToCollectionDom(names);
-		}
-		updateData(data, success);    	
+				action: 'add-to-'+typeid,
+				items: names
+			},
+			callback = (typeid === 'items') ? 
+				addItemsToCollectionDom : 
+				addBucketsToDom,
+			success = function(data) {
+				callback(names);
+			};
+		updateData(data, success);    	    	
     }
 
 

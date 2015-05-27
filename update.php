@@ -8,33 +8,13 @@ $return = [];
 
 if (isset($request['action'])) {
 	switch($request['action']) {
-		case 'add-to-bucket':
-			if (isset($request['bucket']) && isset($request['item'])) {
-				$mappings = getData('mappings');
-				$bucket = $request['bucket'];
-				if (!isset($mappings[$bucket])) {
-					$mappings[$bucket] = [];
-				}
-				$mappings[$bucket][] = $request['item'];
-				putData('mappings', $mappings);				
-			}
-			break;
 		case 'add-to-items':
 			if (isset($request['items'])) {
 				$items = getData('items');
 				$items = array_merge($items, $request['items']);
 				putData('items', $items);
 			}
-			break;
-		case 'delete-from-bucket':
-			if (isset($request['bucket']) && isset($request['item'])) {
-				$mappings = getData('mappings');
-				$bucket = $request['bucket'];
-				$item = $request['item'];
-				$mappings[$bucket] = deleteFromArray($mappings[$bucket], $item);
-				putData('mappings', $mappings);				
-			}
-			break;
+			break;			
 		case 'delete-from-items':
 			if (isset($request['item'])) {
 				$items = getData('items');
@@ -46,6 +26,26 @@ if (isset($request['action'])) {
 					$mappings[$bucket] = deleteFromArray($mappings[$bucket], $item);
 				}
 				putData('mappings', $mappings);	
+			}
+			break;		
+		case 'add-item-to-bucket':
+			if (isset($request['bucket']) && isset($request['item'])) {
+				$mappings = getData('mappings');
+				$bucket = $request['bucket'];
+				if (!isset($mappings[$bucket])) {
+					$mappings[$bucket] = [];
+				}
+				$mappings[$bucket][] = $request['item'];
+				putData('mappings', $mappings);				
+			}
+			break;
+		case 'delete-item-from-bucket':
+			if (isset($request['bucket']) && isset($request['item'])) {
+				$mappings = getData('mappings');
+				$bucket = $request['bucket'];
+				$item = $request['item'];
+				$mappings[$bucket] = deleteFromArray($mappings[$bucket], $item);
+				putData('mappings', $mappings);				
 			}
 			break;			
 	}
