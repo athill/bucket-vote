@@ -20,9 +20,9 @@ if (isset($request['action'])) {
 			}
 			break;
 		case 'add-to-items':
-			if (isset($request['item'])) {
+			if (isset($request['items'])) {
 				$items = getData('items');
-				$items[] = $request['item'];
+				$items = array_merge($items, $request['items']);
 				putData('items', $items);
 			}
 			break;
