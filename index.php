@@ -21,7 +21,7 @@ function addForm($type) {
 	$h->oform('', 'get', ['id'=>'add-'.$type.'-form', 'class'=>'form-inline add-form']);
 	$h->odiv(['class'=>'form-group']);
 	$h->label('add-'.$type, 'Name: ');
-	$h->intext('add-'.$type, '', ['class'=>'form-control']);
+	$h->intext('add-'.$type, '', ['class'=>'form-control add-field']);
 	$h->cdiv();
 	$h->submit('s', 'Add', ['class'=>'btn btn-primary']);
 	$h->cform();

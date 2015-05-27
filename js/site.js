@@ -2,7 +2,6 @@
 $(function() {
 	var $buckets = $('#buckets'),
 		$items = $('#items'),
-		$namesField = $('#add-items'),
 		bucketlimit = 10;
 
 	//// load buckets
@@ -28,7 +27,8 @@ $(function() {
 	//// add new item/bucket
 	$('.add-form').submit(function(e) {
 		e.preventDefault();
-		var names = $namesField.val(),
+		var $namesField = $(this).find('.add-field'),
+			names = $namesField.val(),
 			type = $(this).attr('id').split('-')[1],
 			duplicates = [],
 			adds = [];
@@ -85,18 +85,6 @@ $(function() {
 		    }
 		});		
 	}
-
-	function increment($elem) {		
-		var current = $elem.text();
-		var next = parseInt(current) + 1;
-		$elem.text(next.toString());
-	}
-
-	function decrement($elem) {
-		$elem.html(parseInt($elem.html()) - 1);		
-	}
-
-
 
 	function removeItemFromItems(e) {
 		var $parent = $(this).parent(),
@@ -287,5 +275,13 @@ $(function() {
     	$remove.click(callback);		
     	return $remove;
 	}
+	function increment($elem) {		
+		var current = $elem.text();
+		var next = parseInt(current) + 1;
+		$elem.text(next.toString());
+	}
 
+	function decrement($elem) {
+		$elem.html(parseInt($elem.html()) - 1);		
+	}
 });
