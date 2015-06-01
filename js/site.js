@@ -382,7 +382,7 @@ $(function() {
     			success = function(data) {
 		    		//// clone object
 			    	var $clone = $draggable.clone();
-			    	// $clone.draggable('destroy');
+			    	// $clone.draggable('disable');
 			        addItemToBucketDom($parent, $clone);
 			    };		    		
 		    appdata.buckets[bucket].push(item);
