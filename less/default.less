@@ -13,18 +13,31 @@
 			margin: 0;
 			float: left;
 		}
-		.count {
-			float: right;
-		}
 	}
 
 	.bucket-items {
 		clear: both;
 		background-color: #CCC;
-		padding-bottom: 8em;
+		padding-bottom: 3em;
 	}
 }
 
+#help {
+	display: none;
+}
+
+#help-button {
+	cursor: pointer;
+}
+
+#setup {
+	legend {
+		cursor: pointer;
+	}
+	.toggle {
+		display: none;
+	}
+}
 .item {
 	display: inline-block;
 	border-radius: 0.5em;
@@ -33,13 +46,18 @@
 	padding: 0.5em;
 	margin: 0.5em;
 	cursor: move;
-	.delete-button {
-		margin-left: 0.5em;
-		font-size: 1.2em;
-		color: red;
-		cursor: pointer;
-	}
 	.count {
 		margin-left: 0.5em;
 	}
+}
+
+.controls {
+	float: right;
+}
+
+.delete-button {
+	margin-left: 0.5em;
+	font-size: 1.2em;
+	color: red;
+	cursor: pointer;
 }

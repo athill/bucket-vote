@@ -5,13 +5,53 @@ $local=[];
 $page = new \Athill\Utils\Page($local);
 //// content
 
+//// Help
+$h->i('', ['class'=>'fa fa-question-circle fa-2x pull-right', 'id'=>'help-button']);
+$h->sb();
+$h->odiv(['class'=>'panel panel-default', 'id'=>'help']);
+$h->div($h->rtn('h3', ['Help', ['class'=>'panel-title']]), ['class'=>'panel-heading']);
+$h->odiv(['class'=>'panel-body']);
+$items = [
+	'Click on "Setup" to toggle setup display',
+	'Add buckets',
+	'Add items',
+	'Drag and drop items into buckets'
+];
+$h->ol($items);
+
+$h->button('Got it!', ['class'=>'pull-right btn', 'id'=>'close-help-button']);
+$h->cdiv('/.panel-body');
+$h->cdiv('/.panel');
+$helppanel = $h->eb();
+$h->div($helppanel);
+
+
+//// Administration
+$h->ofieldset('Setup <i class="fa fa-caret-square-o-down"></i>', ['id'=>'setup']);
+$h->odiv(['class'=>'toggle']);
+//// Configuration
+$h->ofieldset('Configuration');
+$h->oform('', 'get', ['id'=>'conf-form', 'class'=>'form-inline']);
+$h->odiv(['class'=>'form-group']);
+$h->label('bucketlimit', 'Bucket Limit: ');
+$h->number('bucketlimit', '', ['class'=>'form-control add-field']);
+$h->cdiv();
+$h->cform();
+$h->cfieldset();
+//// Add buckets
+addForm('buckets');
+//// Add items
+addForm('items');
+$h->cdiv();
+$h->ofieldset();
+
+
 $h->div('', ['id'=>'buckets']);
 
 
 $h->div('', ['id'=>'items']);
 
-addForm('items');
-addForm('buckets');
+
 
 $page->end();
 

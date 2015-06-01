@@ -1,31 +1,145 @@
 'use strict';
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+
 $(function() {
 	var $buckets = $('#buckets'),
 		$items = $('#items'),
-		bucketlimit = 10;
+		$help = $('#help'),
+		$bucketlimit = $('#bucketlimit'),
+		appdata = {
+			buckets: {},
+			items: [],
+			conf: {
+				bucketlimit: 10
+			}
+		},
+		demomode = true,
+		url = '/data/appdata.json';
 
-	//// load buckets
-	$.getJSON('/data/buckets.json', function(data) {
-		addBucketsToDom(data);
-	});
-	//// load items
-	$.getJSON('/data/items.json', function(data) {
-		addItemsToCollectionDom(data);
-	});
-	//// load mappings
-	$.getJSON('/data/mappings.json', function(data) {
-		for (var bucket in data) {
-			var $bucket = $('#'+getId(bucket)+'-bucket');
-			data[bucket].forEach(function(name) {
-				var $item = createItemDom(name),
-					$remove = createRemoveDom(removeItemFromBucket);
-				$item.append($remove);
-				addItemToBucketDom($bucket, $item);
-			});
+	/* event handlers */
+
+	//// toggle setup section visibility
+	$('#setup>legend').click(toggleSetupDisplay);
+
+	$('#help-button').click(function(e) { $help.toggle(); });
+
+	$('#close-help-button').click(function(e) { $help.hide(); });	
+
+	$('#conf-form').submit(function(e) { e.preventDefault(); });	
+
+	$bucketlimit.change(changeBucketlimit);
+
+	$('.add-form').submit(addFormSubmit);
+
+	/* main */
+
+	//// Load initial data/dom
+	if (demomode) {
+		 if (sessionStorage.getItem("data")) {
+		 	console.log(sessionStorage.getItem("data"));
+		 	appdata = JSON.parse(sessionStorage.getItem("data"));
+		 } else {
+		 	sessionStorage.setItem('data', JSON.stringify(appdata));
+		 }
+		 loadInitialDom();
+		 console.log('sessiondata', sessionStorage.getItem("data"));
+		 console.log('appdata', appdata);
+	} else {
+		$.ajax({
+			dataType: "json",
+			url: url,
+			success: function(data) {
+				appdata = data;
+				loadInitialDom();
+
+			}
+		});
+	}	
+
+	/* helpers */
+
+	function loadInitialDom() {
+		var bucketlist = Object.keys(appdata.buckets);
+		
+		addBucketsToDom(bucketlist);
+
+		addItemsToCollectionDom(appdata.items);
+		$bucketlimit.val(appdata.conf.bucketlimit);
+		if (appdata.items.length === 0 || bucketlist.length === 0) {
+			$help.show();
+			$('#setup>legend').eq(0).click();
 		}
-	});
+	}
+
+	function changeBucketlimit() {
+		var bucketlimit = $bucketlimit.val();
+		//// if there is a reduction in bucketlimit, we need to ensure buckets 
+		//// have <= bucketlimit items
+		if (parseInt(bucketlimit) < parseInt(appdata.conf.bucketlimit)) {
+			var over = [];
+			//// determine which buckets have too many items
+			for (var bucket in appdata.buckets) {
+				if (appdata.buckets[bucket].length > bucketlimit) {
+					over.push(bucket);
+				}
+			}
+			if (over.length > 0) {
+				var remove = confirm('The following buckets have more than '+bucketlimit+
+					' items. Some will be removed. \n'+over.join(';'));
+				if (remove) {
+					var removes = {};
+					//// remove from dom
+					$('.bucket-items').each(function(i) {
+						while ($(this).children().length > bucketlimit) {
+							var $item = $(this).children().eq($(this).children().length - 1),
+								$bucket = $(this).closest('.bucket'),
+								bucket = $bucket.find('header .name').html(),
+								item = $item.find('.name').html();
+							if (!(bucket in removes)) {
+								removes[bucket] = [];
+							}
+							removes[bucket].push(item);
+							removeItemFromBucketDom($bucket, $item);
+						}
+					});
+					var data = {
+						action: 'delete-items-from-buckets',
+						removes: removes
+					};	
+					//// remove from appdata
+					for (var bucket in removes) {
+						removes[bucket].forEach(function(item) {
+							appdata.buckets[bucket].remove(item);
+						});
+					}
+					//// update persistent data
+					updateData(data, function(data) {});					
+				} else {
+					$bucketlimit.val(appdata.conf.bucketlimit);
+					return;
+				}
+			}
+		}
+		var data = {
+			action: 'update-bucketlimit',
+			bucketlimit: bucketlimit
+		};
+		updateData(data, function(data) {});
+		appdata.conf.bucketlimit = bucketlimit;
+	};
+
 	//// add new item/bucket
-	$('.add-form').submit(function(e) {
+	
+	function addFormSubmit(e) {
 		e.preventDefault();
 		var $namesField = $(this).find('.add-field'),
 			names = $namesField.val(),
@@ -45,7 +159,6 @@ $(function() {
 		$items.children().each(function(i) {
 			var currentname = $(this).find('.name').text().trim();
 			if (names.indexOf(currentname) >= 0) {
-				// alert(currentname + ' is already in items');
 				duplicates.push(currentname);
 				return false;
 			}
@@ -72,33 +185,62 @@ $(function() {
 			}
 		}
 		//// clear $nameField
-		$namesField.val('');		
+		$namesField.val('');
 		addToCollection(type, adds);
-	});
+	};
+
+    function addToCollection(typeid, names) {
+		var data = {
+				action: 'add-to-'+typeid
+			},
+			callback = (typeid === 'items') ? 
+				addItemsToCollectionDom : 
+				addBucketsToDom,
+			success = function(data) {
+				callback(names);
+			};
+		//// update local data
+		if (typeid === 'items') {
+			appdata.items = appdata.items.concat(names);
+		} else {
+			names.forEach(function(name) {
+				appdata.buckets[name] = [];
+			});
+		}	
+		//// update remove data
+		data[typeid] = names;
+		updateData(data, success);			
+    }
 
 	function updateData(data, success) {
-		$.ajax({
-		    type: "GET",
-		    url: "/update.php",
-		    data: data,
-		    contentType: "application/json; charset=utf-8",
-		    dataType: "json",
-		    success: success,
-		    failure: function(errMsg) {
-		        alert(errMsg);
-		    }
-		});		
+		console.log(appdata, sessionStorage.getItem('data'));
+		if (demomode) {
+			sessionStorage.setItem('data', JSON.stringify(appdata));
+			success();
+		} else {
+			$.ajax({
+			    type: "GET",
+			    url: "/update.php",
+			    data: data,
+			    contentType: "application/json; charset=utf-8",
+			    dataType: "json",
+			    success: success,
+			    failure: function(errMsg) {
+			        alert(errMsg);
+			    }
+			});		
+		}
 	}
 
 	function removeItemFromItems(e) {
-		var $parent = $(this).parent(),
-			name = $parent.find('.name').text(),
+		var $item = $(this).closest('.item'),
+			name = $item.find('.name').text(),
 			data = {
 				action: 'delete-from-items',
 				item: name
 			},
 			success = function(data) {
-				$parent.remove();
+				$item.remove();
 				$buckets.find('.bucket-items').each(function(i) {
 					$(this).find('.item').each(function(j) {
 						if ($(this).find('.name').text() === name) {
@@ -108,22 +250,49 @@ $(function() {
 					});
 				});
 			};
+		//// update appdata
+		appdata.items.remove(name);
+		for (var bucket in appdata.buckets) {
+			appdata.buckets[bucket].remove(name);
+		}
+		//// update persistence
 		updateData(data, success);
 	}
 
+	function removeBucketFromBuckets(e) {
+		var $bucket = $(this).closest('.bucket'),
+			name = $bucket.find('header .name').text(),
+			data = {
+				action: 'delete-from-buckets',
+				bucket: name
+			},
+			success = function(data) {
+				$bucket.find('.bucket-items .items').each(function(i) {
+					removeItemFromBucketDom($bucket, $(this));
+				});
+				$bucket.remove();
+			};
+		delete appdata.buckets[name];
+		updateData(data, success);
+
+	}
+
 	function removeItemFromBucket(e) {
-		var $item = $(this).parent(),
+		var $item = $(this).closest('.item'),
 			$bucket = $item.closest('.bucket'),
+			bucket = $bucket.find('header .name').text(),
 			data = {
 				action: 'delete-item-from-bucket',
-				bucket: $bucket.find('header .name').text(),
+				bucket: bucket,
 				item: $item.find('.name').text()
 
 			},
 			success = function(data) {
 				removeItemFromBucketDom($bucket, $item);	
 			};
+		appdata.buckets[bucket].remove($item.find('.name').text());
 		updateData(data, success);
+
 	}
 
 	function removeItemFromBucketDom($bucket, $item) {
@@ -138,26 +307,34 @@ $(function() {
 	}
 
 	function addItemToBucketDom($bucket, $item) {
+
         var id = getId($item.find('.name').text()),
         	$original = $('#'+id+'-item'),
         	$remove = $item.find('.delete-button'),
         	$bucketcount = $bucket.find('header .count'),
-        	$itemcount = $original.find('.count');
-    	$item.removeAttr('id')
+        	$itemcount = $original.find('.count'),
+        	$items = $bucket.find('.bucket-items');
+    	
+    	$item
+    		.removeAttr('id')
     		.css({'cursor': 'auto'})
     		.find('.count').remove();
     	//// change click handler for delete button
-    	$remove.off('click')
+    	$remove
+    		.off('click')
     		.click(removeItemFromBucket);
     	//// add clone to items
-        $bucket.find('.bucket-items').append($item);
+    	if (!$items.length) {
+    		$bucket.append('<div class="bucket-items"></div>');
+    	}
+        $items.append($item);
         //// increment parent count
         increment($bucketcount);
         //// increment item count
         increment($itemcount);
 	}
 	function getId(name) {
-		return name.toLowerCase().replace(/ /, '-');
+		return name.toLowerCase().replace(/ /, '-').replace(/[^a-z0-9\-]/, '');
 	}
 	function sortItems() {
 		var $children = $items.children();
@@ -183,8 +360,8 @@ $(function() {
     		item = $draggable.find('.name').text(),
     		bucket = $parent.find('header .name').text();
     	//// check length
-    	if ($children.length == bucketlimit) {
-    		alert(bucket +' already has '+bucketlimit+' items');
+    	if ($children.length == appdata.conf.bucketlimit) {
+    		alert(bucket +' already has '+appdata.conf.bucketlimit+' items');
     		add = false;
     	} else {
     		//// check duplicates
@@ -205,36 +382,35 @@ $(function() {
     			success = function(data) {
 		    		//// clone object
 			    	var $clone = $draggable.clone();
+			    	// $clone.draggable('destroy');
 			        addItemToBucketDom($parent, $clone);
-			    };
-		    updateData(data, success);		    		
-
+			    };		    		
+		    appdata.buckets[bucket].push(item);
+		    updateData(data, success);
     	}
     }
 
-    function addToCollection(typeid, names) {
-		var data = {
-				action: 'add-to-'+typeid,
-				items: names
-			},
-			callback = (typeid === 'items') ? 
-				addItemsToCollectionDom : 
-				addBucketsToDom,
-			success = function(data) {
-				callback(names);
-			};
-		updateData(data, success);    	    	
-    }
-
-
     function addBucketsToDom(buckets) {
-		buckets.forEach(function(bucket) {
-			var $bucketitems = $('<div class="bucket-items"></div>'),
+    	//// buckets can either be [<bucket1>, ...] or { <bucket1>: [<item1, ...] }
+    	var bucketsIsArray = Array.isArray(buckets);
+    	var bucketlist = (bucketsIsArray) ? buckets : Object.keys(buckets);
+		bucketlist.forEach(function(bucket) {
+			var $bucketitems = $('<div/>').addClass('bucket-items'),
 				$bucket = createBucketDom(bucket);
 			$bucketitems.droppable({
 			    drop: handleItemDrop
 			});
-			$bucket.append($bucketitems);			
+			//// if buckets is object literal, get its items array, otherwise, empty array
+			var items = (appdata.buckets[bucket]) ? appdata.buckets[bucket] :
+				(bucketsIsArray) ?  [] : 
+				buckets[bucket];
+			$bucket.append($bucketitems);
+			items.forEach(function(item) {
+				var $item = createItemDom(item),
+					$remove = createRemoveDom(removeItemFromBucket);
+				$item.find('.controls').append($remove);
+				addItemToBucketDom($bucket, $item);
+			});		
 			$buckets.append($bucket);
 		});    	
     }
@@ -243,8 +419,16 @@ $(function() {
 		names.forEach(function(name) {
 			var $item = createItemDom(name),
 				$count = createCountDom(),
-				$remove = createRemoveDom(removeItemFromItems);
-			$item.append($count)
+				$remove = createRemoveDom(removeItemFromItems),
+				$controls = $item.find('.controls'),
+				count = 0;
+			for (var bucket in appdata.buckets) {
+				if (appdata.buckets[bucket].indexOf(name) !== -1) {
+					count++;
+				}
+			}
+			$count.html(count);
+			$controls.append($count)
 				.append($remove);
 			$items.append($item);
 		});
@@ -253,27 +437,43 @@ $(function() {
 
 	//// DOM methods
 	function createBucketDom(bucketName) {
-		return $('<div class="bucket" id="'+getId(bucketName)+'-bucket">'+
-					'<header>'+
-						'<span class="name">'+bucketName+'</span>'+
-						'<span class="count">0</span>'+
-					'</header>'+
-				'</div>');
+		var $bucket = $('<div/>')
+				.prop('id', getId(bucketName)+'-bucket')
+				.addClass('bucket'),
+			$controls = $('<div/>')
+				.addClass('controls')
+				.append(createCountDom())
+				.append(createRemoveDom(removeBucketFromBuckets)),
+			$header = $('<header/>')
+				.append(createNameDom(bucketName))
+				.append($controls);
+		$bucket.append($header);
+		return $bucket;
 	}
 
 	function createItemDom(itemName) {
-		var $item = $('<div id="'+getId(itemName)+'-item" class="item">'+
-							'<span class="name">'+itemName+'</span>'+
-						'</div>');
-		$item.draggable({
-		    helper:"clone"
-		});
+		var $item = $('<div/>')
+				.prop('id', getId(itemName)+'-item')
+				.addClass('item')
+				.append(createNameDom(itemName))
+				.append($('<div/>').addClass('controls'))
+				.draggable({
+					helper: 'clone'
+				});
 		return $item;
+	}
+
+	function createNameDom(name) {
+		return $('<span/>')
+			.addClass('name')
+			.text(name);
 	}
 
 	function createCountDom(count) {
 		var count = count || 0;
-		return $('<span class="count">'+count+'</span>');
+		return $('<span/>')
+			.addClass('count')
+			.html(count);
 	}
 
 	function createRemoveDom(callback) {
@@ -290,4 +490,21 @@ $(function() {
 	function decrement($elem) {
 		$elem.html(parseInt($elem.html()) - 1);		
 	}
+
+	/** Form stuff */
+	function toggleSetupDisplay(e) {
+		var $div = $(this).parent().find('.toggle'),
+			$i = $(this).find('i'),
+			downclass = 'fa-caret-square-o-down',
+			upclass = 'fa-caret-square-o-up';
+		if ($div.css('display') === 'none') {
+			$div.show();
+			$i.removeClass(downclass)
+				.addClass(upclass);
+		} else {
+			$div.hide();
+			$i.removeClass(upclass)
+				.addClass(downclass);
+		}		
+	}	
 });

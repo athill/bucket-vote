@@ -15,13 +15,22 @@
   margin: 0;
   float: left;
 }
-.bucket header .count {
-  float: right;
-}
 .bucket .bucket-items {
   clear: both;
   background-color: #CCC;
-  padding-bottom: 8em;
+  padding-bottom: 3em;
+}
+#help {
+  display: none;
+}
+#help-button {
+  cursor: pointer;
+}
+#setup legend {
+  cursor: pointer;
+}
+#setup .toggle {
+  display: none;
 }
 .item {
   display: inline-block;
@@ -32,12 +41,15 @@
   margin: 0.5em;
   cursor: move;
 }
-.item .delete-button {
+.item .count {
+  margin-left: 0.5em;
+}
+.controls {
+  float: right;
+}
+.delete-button {
   margin-left: 0.5em;
   font-size: 1.2em;
   color: red;
   cursor: pointer;
-}
-.item .count {
-  margin-left: 0.5em;
 }

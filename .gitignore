@@ -2,6 +2,7 @@ node_modules/
 bower_components/
 vendor/
 logs/
+data/
 composer.lock
 .env.*.php
 .env.php
