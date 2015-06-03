@@ -14,7 +14,7 @@ if (isset($_SERVER['HTTP_HOST'])) {
 	//// remove port
 	$host = preg_replace('/([^:]+):\\d+/', '$1', $_SERVER['HTTP_HOST']);
 	switch ($host) {
-		case 'demo.andyhill.us':
+		case 'bucket-vote.andyhill.us':
 			$instance = 'prd';
 			break;
 	}

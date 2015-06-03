@@ -5,6 +5,17 @@ $local=[];
 $page = new \Athill\Utils\Page($local);
 //// content
 
+$host = $_SERVER['HTTP_HOST'];
+$demohost = 'localhost:8000';
+$github = 'https://github.com/athill/bucket-vote';
+
+if ($host == $demohost) {
+	$h->div('<strong>In demo mode. Data is only saved for the current browser session.</strong>
+		to persist data, download from '.$h->rtn('a', [$github]).'',
+		['class'=>'alert alert-danger', 'role'=>'alert']);
+}
+
+
 //// Help
 $h->i('', ['class'=>'fa fa-question-circle fa-2x pull-right', 'id'=>'help-button']);
 $h->sb();
@@ -27,7 +38,7 @@ $h->div($helppanel);
 
 
 //// Administration
-$h->ofieldset('Setup <i class="fa fa-caret-square-o-down"></i>', ['id'=>'setup']);
+$h->ofieldset('Setup <i class="fa fa-caret-square-o-down pull-right"></i>', ['id'=>'setup']);
 $h->odiv(['class'=>'toggle']);
 //// Configuration
 $h->ofieldset('Configuration');
