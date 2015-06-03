@@ -1,15 +1,10 @@
-# PHP-Utils-Demo
+# Bucket Vote
 
-Demo for [PHP-Utils](https://github.com/athill/PHP-Utils)
+[Current Demo](http://bucket-vote.andyhill.us/)
 
-[Current Demo](http://demo.andyhill.us/)
+## Premise
 
-This, like PHP-Utils, is a work in progress. Like PHP-Utils, I'm building things as I need them. For example, I wanted to verify nested directories are handled properly, so there are nested directories. I also want to convert some sites I'm already responsible for to this paradigm, so development in some areas before others may reflect that as well. 
+At my church ([United Presbyterian Church in Bloomington, IN](http://upcbloomington.org/)), a committee I am on had to choose the group that will find our next pastor. We had 15 or so prospects, but needed 7 members for the group. We did what I call a "bucket vote" (though I can't seem to find a use of this term anywhere.) The way ours worked was each voter could select 10 prospects and the 7 who got the most votes were asked first. 
 
-That said, I'm hoping to create a simpler demo at some point, but currently this suits my needs. For this demo, you need either [Laravel Homestead](http://laravel.com/docs/4.2/homestead), or to install Composer and Node.js and then Bower and Gulp.js. Once you have these requirements, you should be able to run the following commands and then view the demo:
+This app provides a graphical way to cast and tally the votes.
 
-
-	$ composer update
-	$ npm install
-	$ bower install
-	$ gulp

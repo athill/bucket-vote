@@ -15,6 +15,7 @@ $(function() {
 		$items = $('#items'),
 		$help = $('#help'),
 		$bucketlimit = $('#bucketlimit'),
+		$setupToggle = $('#setup .panel-heading'),
 		appdata = {
 			buckets: {},
 			items: [],
@@ -22,13 +23,13 @@ $(function() {
 				bucketlimit: 10
 			}
 		},
-		demomode = true,
+		demomode = $('#demo-alert').length,
 		url = '/data/appdata.json';
 
 	/* event handlers */
 
 	//// toggle setup section visibility
-	$('#setup>legend').click(toggleSetupDisplay);
+	$setupToggle.click(toggleSetupDisplay);
 
 	$('#help-button').click(function(e) { $help.toggle(); });
 
@@ -76,7 +77,7 @@ $(function() {
 		$bucketlimit.val(appdata.conf.bucketlimit);
 		if (appdata.items.length === 0 || bucketlist.length === 0) {
 			$help.show();
-			$('#setup>legend').eq(0).click();
+			$setupToggle.eq(0).click();
 		}
 	}
 
