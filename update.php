@@ -106,7 +106,13 @@ function getData() {
 	];
 	if (file_exists($datafile)) {
 		$data = json_decode(file_get_contents($datafile), true);
+	} else {
+		if (!file_exists(dirname($datafile))) {
+			mkdir(dirname($datafile));
+		}
+		file_put_contents($datafile, json_encode($data));
 	} 
+
 	return $data;
 }
 

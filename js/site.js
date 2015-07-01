@@ -13,7 +13,6 @@ Array.prototype.remove = function() {
 $(function() {
 	var $buckets = $('#buckets'),
 		$items = $('#items'),
-		$help = $('#help'),
 		$bucketlimit = $('#bucketlimit'),
 		$setupToggle = $('#setup .panel-heading'),
 		appdata = {
@@ -27,13 +26,15 @@ $(function() {
 		url = '/data/appdata.json';
 
 	/* event handlers */
+	//// toggle panels
+	$('.panel .toggler').click(function(e) {
+		var $toggle = $(this).parent().find('.toggle');
+		$toggle.toggle();
+	});
 
-	//// toggle setup section visibility
-	$setupToggle.click(toggleSetupDisplay);
-
-	$('#help-button').click(function(e) { $help.toggle(); });
-
-	$('#close-help-button').click(function(e) { $help.hide(); });	
+	$('#close-help-button').click(function(e) { 
+		$(this).parent().hide();
+	});	
 
 	$('#conf-form').submit(function(e) { e.preventDefault(); });	
 
@@ -491,21 +492,5 @@ $(function() {
 	function decrement($elem) {
 		$elem.html(parseInt($elem.html()) - 1);		
 	}
-
-	/** Form stuff */
-	function toggleSetupDisplay(e) {
-		var $div = $(this).parent().find('.toggle'),
-			$i = $(this).find('i'),
-			downclass = 'fa-caret-square-o-down',
-			upclass = 'fa-caret-square-o-up';
-		if ($div.css('display') === 'none') {
-			$div.show();
-			$i.removeClass(downclass)
-				.addClass(upclass);
-		} else {
-			$div.hide();
-			$i.removeClass(upclass)
-				.addClass(downclass);
-		}		
-	}	
+	
 });

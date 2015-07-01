@@ -20,7 +20,10 @@
   background-color: #CCC;
   padding-bottom: 2em;
 }
-#help {
+.panel .toggler {
+  cursor: pointer;
+}
+.panel .toggler .toggle {
   display: none;
 }
 #help-button {
