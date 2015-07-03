@@ -20,20 +20,17 @@
   background-color: #CCC;
   padding-bottom: 2em;
 }
+.panel {
+  margin-bottom: 0;
+}
 .panel .toggler {
   cursor: pointer;
 }
-.panel .toggler .toggle {
+.panel .toggle {
   display: none;
 }
 #help-button {
   cursor: pointer;
-}
-#setup legend {
-  cursor: pointer;
-}
-#setup .toggle {
-  display: none;
 }
 .item {
   display: inline-block;

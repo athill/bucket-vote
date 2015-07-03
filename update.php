@@ -9,6 +9,9 @@ $return = [];
 
 if (isset($request['action'])) {
 	switch($request['action']) {
+		case 'get':
+			$return = getData();
+			break;
 		case 'add-to-items':
 			if (isset($request['items'])) {
 				$data = getData();

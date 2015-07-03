@@ -22,8 +22,7 @@ $(function() {
 				bucketlimit: 10
 			}
 		},
-		demomode = $('#demo-alert').length,
-		url = '/data/appdata.json';
+		demomode = $('#demo-alert').length
 
 	/* event handlers */
 	//// toggle panels
@@ -42,6 +41,10 @@ $(function() {
 
 	$('.add-form').submit(addFormSubmit);
 
+	$('#sort-by-vote').click(function(e) {
+		sortItemsByVote();
+	});
+
 	/* main */
 
 	//// Load initial data/dom
@@ -53,12 +56,11 @@ $(function() {
 		 	sessionStorage.setItem('data', JSON.stringify(appdata));
 		 }
 		 loadInitialDom();
-		 console.log('sessiondata', sessionStorage.getItem("data"));
-		 console.log('appdata', appdata);
 	} else {
 		$.ajax({
 			dataType: "json",
-			url: url,
+			url: '/update.php',
+			data: { action: 'get' },
 			success: function(data) {
 				appdata = data;
 				loadInitialDom();
@@ -77,8 +79,10 @@ $(function() {
 		addItemsToCollectionDom(appdata.items);
 		$bucketlimit.val(appdata.conf.bucketlimit);
 		if (appdata.items.length === 0 || bucketlist.length === 0) {
-			$help.show();
-			$setupToggle.eq(0).click();
+			// $help.show();
+			// $setupToggle.eq(0).click();
+			$('#help .toggle').show();
+			$('#setup .toggle').show();
 		}
 	}
 
@@ -309,7 +313,6 @@ $(function() {
 	}
 
 	function addItemToBucketDom($bucket, $item) {
-
         var id = getId($item.find('.name').text()),
         	$original = $('#'+id+'-item'),
         	$remove = $item.find('.delete-button'),
@@ -338,11 +341,11 @@ $(function() {
 	function getId(name) {
 		return name.toLowerCase().replace(/ /, '-').replace(/[^a-z0-9\-]/, '');
 	}
-	function sortItems() {
-		var $children = $items.children();
+	function sortEntries($container, finder) {
+		var $children = $container.children();
 		$children.sort(function(a, b) {
-			var an = $(a).find('.name').text().split(' ')[1];
-			var bn = $(b).find('.name').text().split(' ')[1];
+			var an = finder(a),
+				bn = finder(b);
 			if(an > bn) {
 				return 1;
 			}
@@ -351,7 +354,25 @@ $(function() {
 			}
 			return 0;			
 		});
-		$children.detach().appendTo($items);
+		$children.detach().appendTo($container);
+	}
+
+	function sortItemsByName() {
+		sortEntries($items, function(elem) {
+			return $(elem).find('.name').text();
+		})		
+	}
+
+	function sortBucketsByName() {
+		sortEntries($buckets, function(elem) {
+			return $(elem).find('header .name').text();
+		});		
+	}
+
+	function sortItemsByVote() {
+		sortEntries($items, function(elem) {
+			return $(elem).find('.count').text();
+		})
 	}
 
 	function handleItemDrop(e, ui) {
@@ -414,7 +435,8 @@ $(function() {
 				addItemToBucketDom($bucket, $item);
 			});		
 			$buckets.append($bucket);
-		});    	
+		});  
+		sortBucketsByName();  	
     }
 
 	function addItemsToCollectionDom(names) {
@@ -424,7 +446,9 @@ $(function() {
 				$remove = createRemoveDom(removeItemFromItems),
 				$controls = $item.find('.controls'),
 				count = 0;
+				console.log(appdata.buckets);
 			for (var bucket in appdata.buckets) {
+
 				if (appdata.buckets[bucket].indexOf(name) !== -1) {
 					count++;
 				}
@@ -434,7 +458,7 @@ $(function() {
 				.append($remove);
 			$items.append($item);
 		});
-		sortItems();
+		sortItemsByName();
 	}
 
 	//// DOM methods

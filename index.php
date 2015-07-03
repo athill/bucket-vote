@@ -43,12 +43,24 @@ togglablePanel([
 
 //// Setup panel
 $h->sb();
-$h->oform('', 'get', ['id'=>'conf-form', 'class'=>'form-inline']);
+$h->oform('', 'get', ['id'=>'conf-form', 'class'=>'container']);
+// $h->odiv(['class'=>'form-group']);
+////// row
+$h->odiv(['class'=>'row']);
 $h->odiv(['class'=>'form-group']);
+//// label
+$h->odiv(['class'=>'col-md-2']);
 $h->label('bucketlimit', 'Bucket Limit: ');
-$h->number('bucketlimit', '', ['class'=>'form-control add-field']);
 $h->cdiv();
+//// field
+$h->odiv(['class'=>'col-md-5']);
+$h->number('bucketlimit', '', ['class'=>'form-control']);
+$h->cdiv();
+$h->div('&nbsp;', ['class'=>'col-md-1']);
+$h->cdiv('/.form-group');
+$h->cdiv('/.row');
 $h->cform();
+$h->p('Separate individual buckets and items with semi-colons.');
 //// Add buckets
 addForm2('buckets');
 //// Add items
@@ -70,6 +82,8 @@ $h->cfieldset();
 $h->ofieldset('Items');
 $h->div('', ['id'=>'items']);
 $h->cfieldset();
+
+$h->button('Sort by vote', ['class'=>'btn btn-warning', 'id'=>'sort-by-vote']);
 
 $page->end();
 
@@ -110,7 +124,7 @@ function addForm2($type) {
 	$h->cdiv();	
 	//// submit button
 	$h->odiv(['class'=>'col-md-1']);
-	$h->submit('s', 'Add', ['class'=>'btn btn-primary']);
+	$h->submit('s', 'Add', ['class'=>'btn btn-primary btn-sm']);
 	$h->cdiv();
 	$h->cdiv('/.form-group');
 	$h->cdiv('/.row');
