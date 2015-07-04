@@ -6,8 +6,8 @@ $page = new \Athill\Utils\Page($local);
 
 //// vars
 $host = $_SERVER['HTTP_HOST'];
-$demohost = 'localhost:8000';
-// $demohost = 'bucketvote.andyhill.us';
+// $demohost = 'localhost:8000';
+$demohost = 'bucketvote.andyhill.us';
 $github = 'https://github.com/athill/bucket-vote';
 $isDemo = $host == $demohost;
 
