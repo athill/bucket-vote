@@ -32,6 +32,11 @@
 #help-button {
   cursor: pointer;
 }
+#toolbar {
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: thin solid gray;
+}
 .item {
   display: inline-block;
   border-radius: 0.5em;

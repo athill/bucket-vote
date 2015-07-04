@@ -3,15 +3,16 @@ require_once('conf/setup.php');
 $local=[];
 
 $page = new \Athill\Utils\Page($local);
-//// content
 
+//// vars
 $host = $_SERVER['HTTP_HOST'];
 $demohost = 'localhost:8000';
-$demohost = 'bucketvote.andyhill.us';
+// $demohost = 'bucketvote.andyhill.us';
 $github = 'https://github.com/athill/bucket-vote';
+$isDemo = $host == $demohost;
 
 //// demo alert
-if ($host == $demohost) {
+if ($isDemo) {
 	$h->div('<strong>In demo mode. Data is only saved for the current browser session.</strong>
 		To persist data, download from '.$h->rtn('a', [$github]).'',
 		['class'=>'alert alert-danger', 'role'=>'alert', 'id'=>'demo-alert']);
@@ -44,7 +45,6 @@ togglablePanel([
 //// Setup panel
 $h->sb();
 $h->oform('', 'get', ['id'=>'conf-form', 'class'=>'container']);
-// $h->odiv(['class'=>'form-group']);
 ////// row
 $h->odiv(['class'=>'row']);
 $h->odiv(['class'=>'form-group']);
@@ -54,7 +54,7 @@ $h->label('bucketlimit', 'Bucket Limit: ');
 $h->cdiv();
 //// field
 $h->odiv(['class'=>'col-md-5']);
-$h->number('bucketlimit', '', ['class'=>'form-control']);
+$h->number('bucketlimit', 10, ['class'=>'form-control']);
 $h->cdiv();
 $h->div('&nbsp;', ['class'=>'col-md-1']);
 $h->cdiv('/.form-group');
@@ -62,9 +62,9 @@ $h->cdiv('/.row');
 $h->cform();
 $h->p('Separate individual buckets and items with semi-colons.');
 //// Add buckets
-addForm2('buckets');
+renderAddForm('buckets');
 //// Add items
-addForm2('items');
+renderAddForm('items');
 $body = $h->eb();
 
 togglablePanel([
@@ -83,7 +83,16 @@ $h->ofieldset('Items');
 $h->div('', ['id'=>'items']);
 $h->cfieldset();
 
-$h->button('Sort by vote', ['class'=>'btn btn-warning', 'id'=>'sort-by-vote']);
+//// toolbar
+$h->osection(['id'=>'toolbar']);
+$h->button('Sort items by vote', ['class'=>'btn btn-warning', 'id'=>'sort-by-vote']);
+if (!$isDemo) {
+	$h->a('./spreadsheet.php', 'Download', 
+		['class'=>'btn btn-warning', 
+		'target'=>'_blank'
+	]);
+}
+$h->csection('/#toolbar');
 
 $page->end();
 
@@ -96,7 +105,9 @@ function togglablePanel($opts=[]) {
 		'body'=>''
 	];
 	$opts = $h->extend($defaults, $opts);
-	$atts = $h->extend(['class'=>'panel panel-default'], $opts['atts']);
+	$atts = $opts['atts'];
+	$atts['class'] = 'panel panel-default';
+
 	$h->odiv($atts);
 	$title = $h->rtn('h3', [$opts['title'], ['class'=>'panel-title']]);
 	$h->div($title, ['class'=>'panel-heading toggler']);
@@ -107,7 +118,7 @@ function togglablePanel($opts=[]) {
 }
 
 
-function addForm2($type) {
+function renderAddForm($type) {
 	global $h;
 	$id = 'add-'.$type.'-form';
 	$h->oform(['id'=>$id, 'class'=>'container add-form']);
