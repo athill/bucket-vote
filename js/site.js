@@ -10,6 +10,8 @@ Array.prototype.remove = function() {
     return this;
 };
 
+$.fn.reverse = [].reverse;
+
 $(function() {
 	var $buckets = $('#buckets'),
 		$items = $('#items'),
@@ -341,7 +343,8 @@ $(function() {
 	function getId(name) {
 		return name.toLowerCase().replace(/ /, '-').replace(/[^a-z0-9\-]/, '');
 	}
-	function sortEntries($container, finder) {
+	function sortEntries($container, finder, reverse) {
+		reverse = reverse || false;
 		var $children = $container.children();
 		$children.sort(function(a, b) {
 			var an = finder(a),
@@ -354,6 +357,10 @@ $(function() {
 			}
 			return 0;			
 		});
+		if (reverse) {
+			console.log($children);
+			$children.reverse();
+		}
 		$children.detach().appendTo($container);
 	}
 
@@ -372,7 +379,7 @@ $(function() {
 	function sortItemsByVote() {
 		sortEntries($items, function(elem) {
 			return $(elem).find('.count').text();
-		})
+		}, true);
 	}
 
 	function handleItemDrop(e, ui) {
