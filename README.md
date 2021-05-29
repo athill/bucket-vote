@@ -9,19 +9,8 @@ At my church ([United Presbyterian Church in Bloomington, IN](http://upcblooming
 
 This app provides a graphical way to cast and tally the votes.
 
-How to use
+Usage
 --------------------
-
-First, make sure you've installed [Composer](https://getcomposer.org/.)
-
-Next, clone this repo:
-
-```
-git clone git@github.com:athill/bucket-vote
-```
-
-Now, `cd` into that directory, update composer, and start the PHP server:
-
 ```
 cd bucket-vote
 docker run -it --rm -v `pwd`:/app composer install
