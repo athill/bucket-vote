@@ -24,7 +24,7 @@ Now, `cd` into that directory, update composer, and start the PHP server:
 
 ```
 cd bucket-vote
-composer update
+docker run -it --rm -v `pwd`:/app composer install
 php -S localhost:8000
 ```
 
