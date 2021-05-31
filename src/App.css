@@ -1,0 +1,51 @@
+.bucket {
+    width: 15em;
+    background-color: #AAA;
+  }
+  .bucket .card-header {
+    width: 100%;
+  }
+  .bucket .card-header .name {
+    padding: 0;
+    margin: 0;
+    float: left;
+  }
+  .bucket .bucket-items {
+    clear: both;
+    background-color: #CCC;
+    padding-bottom: 2em;
+  }
+
+  #help-button {
+    cursor: pointer;
+  }
+  #toolbar {
+    margin-top: 1em;
+    padding-top: 1em;
+    border-top: thin solid gray;
+  }
+  .item {
+    display: inline-block;
+    border-radius: 0.5em;
+    width: 12.75em;
+    background-color: #0C0;
+    padding: 0.1em 0.5em;
+    margin: 0.25em;
+    cursor: move;
+  }
+  .item .count {
+    margin-left: 0.5em;
+  }
+  .controls {
+    float: right;
+  }
+  .delete-button {
+    margin-left: 0.5em;
+    font-size: 1.2em;
+    color: red;
+    cursor: pointer;
+  }
+  footer {
+    text-align: center;
+    padding: 1em;
+  }
