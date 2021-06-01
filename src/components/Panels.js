@@ -28,7 +28,7 @@ const HelpPanel = () => (
                 <li>Add items</li>
                 <li>Drag and drop items into buckets</li>
             </ol>
-            <button class="pull-right btn" id="close-help-button">Got it!</button>
+            <button className="pull-right btn" id="close-help-button">Got it!</button>
         </Card.Body>
         </Accordion.Collapse>
     </Card>
@@ -54,7 +54,7 @@ const SettingsPanel = () => (
         <Accordion.Collapse eventKey="1">
             <Card.Body>
                 <Form className="container">
-                    <FormRow id="bucketlimit" label="Bucket Limit:" SubmitButton={() => <span>&nbsp;</span>}  type="number" value="10" />
+                    <FormRow id="bucketlimit" label="Bucket Limit:" SubmitButton={() => <span>&nbsp;</span>}  type="number" />
                 </Form>
 
                 <p>Separate individual buckets and items with semi-colons.</p>
@@ -70,22 +70,6 @@ const SettingsPanel = () => (
         </Accordion.Collapse>
     </Card>
 );
-
-/* <form id="add-buckets-form" class="container add-form" action="">
-<div class="row">
-    <div class="form-group">
-        <div class="col-md-2">
-            <label for="add-buckets">Add Buckets: </label>
-        </div>
-        <div class="col-md-5">
-            <input id="add-buckets" type="text" name="add-buckets" class="form-control add-field" size="50"/>
-        </div>
-        <div class="col-md-1">
-            <input id="s" type="submit" name="s" value="Add" class="btn btn-primary btn-sm"/>
-        </div>
-    </div>
-</div>
-</form> */
 
 
 const Panels = () => (
